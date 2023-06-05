@@ -1,7 +1,6 @@
 import { Message, MessageService } from '@linhx/nest-kafka';
 import { Inject } from '@nestjs/common';
 import { Outbox } from './entities/outbox.entity';
-import { DB_PROVIDER, Db } from '@linhx/nest-repo';
 import {
   OutboxRepository,
   OutboxRepositoryProviderName,
@@ -17,7 +16,6 @@ import { CommitEvent } from '../decorators/transactional.interface';
 @Service()
 export class OutboxServiceImpl implements OutBoxService<Outbox> {
   constructor(
-    @Inject(DB_PROVIDER) private db: Db,
     @Inject(OutboxRepositoryProviderName)
     private readonly outboxRepo: OutboxRepository,
     private readonly messageService: MessageService,

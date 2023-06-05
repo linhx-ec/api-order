@@ -1,4 +1,4 @@
-import { Db, TransactionStore } from '@linhx/nest-repo';
+import { DB_PROVIDER, TransactionStore } from '@linhx/nest-repo';
 import { v4 as uuidv4 } from 'uuid';
 import {
   TRANSACTION_STORE,
@@ -13,16 +13,15 @@ import { Inject } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { TransactionalOptions } from './transactional.interface';
 
-const alreadyOverrideTransactionalMethod = Symbol(
-  'alreadyOverrideTransactionalMethod',
+const OVERRIDDEN_TRANSACTIONAL_WATERMARK = Symbol(
+  'OVERRIDDEN_TRANSACTIONAL_WATERMARK',
 );
+const INJECT_DB_WATERMARK = Symbol('INJECT_DB_WATERMARK');
+const INJECT_EVENT_EMITTER_WATERMARK = Symbol('INJECT_EVENT_EMITTER_WATERMARK');
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const overrideTransactionalMethods = (target: Function) => {
   const proto = (target as any).prototype;
-
-  const injectEventEmitter = Inject(EventEmitter2);
-  injectEventEmitter(proto, '_eventEmitter_');
 
   const propertiesName = Object.getOwnPropertyNames(proto);
   for (const propertyName of propertiesName) {
@@ -31,16 +30,16 @@ export const overrideTransactionalMethods = (target: Function) => {
     }
     const desc = Object.getOwnPropertyDescriptor(proto, propertyName);
 
-    const alreadyCreated: boolean = Reflect.getOwnMetadata(
-      alreadyOverrideTransactionalMethod,
+    const alreadyOverride: boolean = Reflect.getOwnMetadata(
+      OVERRIDDEN_TRANSACTIONAL_WATERMARK,
       proto,
       propertyName,
     );
-    if (alreadyCreated) {
+    if (alreadyOverride) {
       break;
     }
     Reflect.defineMetadata(
-      alreadyOverrideTransactionalMethod,
+      OVERRIDDEN_TRANSACTIONAL_WATERMARK,
       true, // set alreadyCreated
       proto,
       propertyName,
@@ -78,17 +77,30 @@ const genTrxUuid = (transactionStore: TransactionStore) => {
   throw new Error('Can not create transaction uuid');
 };
 
+const injectNeededDependencies = (target: Record<string, any>) => {
+  if (!Reflect.getMetadata(INJECT_DB_WATERMARK, target)) {
+    Inject(DB_PROVIDER)(target, '_db_');
+    Reflect.defineMetadata(INJECT_DB_WATERMARK, true, target);
+  }
+  if (!Reflect.getMetadata(INJECT_EVENT_EMITTER_WATERMARK, target)) {
+    Inject(EventEmitter2)(target, '_eventEmitter_');
+    Reflect.defineMetadata(INJECT_EVENT_EMITTER_WATERMARK, true, target);
+  }
+};
+
 const overrideTrxMethod = (
   target: Record<string, any>,
   descriptor: PropertyDescriptor,
   propertyName: string,
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const originalFunc = descriptor.value!;
   const options: TransactionalOptions = Reflect.getMetadata(
     TRANSACTIONAL_OPTIONS,
     target,
     propertyName,
   );
+  injectNeededDependencies(target);
   descriptor.value = function (...args) {
     let trxUuid = transactionStore.getStore() as string;
     if (
@@ -96,17 +108,11 @@ const overrideTrxMethod = (
       !TRANSACTION_STORE.hasTransaction(trxUuid) ||
       options?.new
     ) {
-      const db: Db = this.db; // TODO not perfect (fixed name, still have to inject manually)
-      if (!db) {
-        throw new Error(
-          `Must inject DB to ${target.constructor.name}: \`@Inject(DB_PROVIDER) private db: Db\``,
-        );
-      }
       trxUuid = genTrxUuid(TRANSACTION_STORE);
       return transactionStore.run(trxUuid, async () => {
         let committed = false;
         try {
-          const res = await db.withTransaction(null, (_trx) => {
+          const res = await this._db_.withTransaction(null, (_trx) => {
             TRANSACTION_STORE.set(trxUuid, _trx); // add transaction to the store
             return originalFunc.apply(this, args);
           });
@@ -135,6 +141,7 @@ const overrideNonTrxMethod = (
   target: Record<string, any>,
   descriptor?: PropertyDescriptor,
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const originalFunc = descriptor.value!;
   descriptor.value = function (...args) {
     const trxUuid = genTrxUuid(TRANSACTION_STORE);

@@ -11,7 +11,6 @@ export function Transactional(options?: TransactionalOptions) {
     // eslint-disable-next-line @typescript-eslint/ban-types
     target: Record<string, any> | Function,
     propertyName?: string,
-    descriptor?: PropertyDescriptor,
   ) {
     const isClassDecorator = !propertyName;
 

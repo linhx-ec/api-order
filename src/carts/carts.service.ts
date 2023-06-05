@@ -1,4 +1,3 @@
-import { DB_PROVIDER, Db } from '@linhx/nest-repo';
 import { Inject, NotImplementedException } from '@nestjs/common';
 import { CartRepository, CartRepositoryProviderName } from './cart.repository';
 import { Transactional } from '../decorators/transactional.decorator';
@@ -18,7 +17,6 @@ import { OUTBOX_PROVIDER, OutBoxService } from '../outbox/outbox.service';
 @Transactional()
 export class CartsService {
   constructor(
-    @Inject(DB_PROVIDER) private db: Db,
     @Inject(CartRepositoryProviderName)
     private readonly cartRepo: CartRepository,
     private readonly orderService: OrdersService,

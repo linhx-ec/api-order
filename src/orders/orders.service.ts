@@ -1,5 +1,4 @@
 import { Inject } from '@nestjs/common';
-import { DB_PROVIDER, Db } from '@linhx/nest-repo';
 import { Transactional } from '../decorators/transactional.decorator';
 import { CreateOrderDto } from './dto/create-order.dto';
 import {
@@ -12,7 +11,6 @@ import { Service } from '../decorators/service.decorator';
 @Transactional()
 export class OrdersService {
   constructor(
-    @Inject(DB_PROVIDER) private db: Db,
     @Inject(OrderRepositoryProviderName)
     private readonly orderRepo: OrderRepository,
   ) {}
