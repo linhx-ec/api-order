@@ -1,6 +1,5 @@
 import { Inject, NotImplementedException } from '@nestjs/common';
 import { CartRepository, CartRepositoryProviderName } from './cart.repository';
-import { Transactional } from '../decorators/transactional.decorator';
 import { AddCartDto } from './dto/add-cart-line.dto';
 import { Cart } from './entities/cart.entity';
 import { OrdersService } from '../orders/orders.service';
@@ -10,8 +9,8 @@ import { CreateOrderLineDto } from '../orders/dto/create-order-line.dto';
 import { index as findIndex } from '@linhx/utils';
 import { CartLine } from './entities/cart-line.entity';
 import { TOPIC_ORDER_CREATED } from '../constants/messages';
-import { Service } from '../decorators/service.decorator';
 import { OUTBOX_PROVIDER, OutBoxService } from '../outbox/outbox.service';
+import { Service, Transactional } from '@linhx/nest-repo';
 
 @Service()
 @Transactional()

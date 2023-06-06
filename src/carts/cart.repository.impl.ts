@@ -8,8 +8,7 @@ import {
   MongoTransaction,
   RepositoryImpl,
 } from '@linhx/nest-repo-mongodb';
-import { DB_PROVIDER } from '@linhx/nest-repo';
-import { TRANSACTION_STORE } from '../commons/transaction-store';
+import { DB_PROVIDER, TRANSACTION_STORE } from '@linhx/nest-repo';
 
 @Injectable()
 export class CartRepositoryImpl
@@ -20,7 +19,7 @@ export class CartRepositoryImpl
     @Inject(DB_PROVIDER) private readonly db: DbMongo,
     @InjectModel(Cart.name) private cartModel: Model<CartDocument>,
   ) {
-    super(db, cartModel, TRANSACTION_STORE);
+    super(db, cartModel);
   }
   findByUserId(userId: string): Promise<Cart> {
     return this.cartModel

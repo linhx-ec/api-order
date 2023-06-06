@@ -1,11 +1,10 @@
 import { Inject } from '@nestjs/common';
-import { Transactional } from '../decorators/transactional.decorator';
 import { CreateOrderDto } from './dto/create-order.dto';
 import {
   OrderRepository,
   OrderRepositoryProviderName,
 } from './order.repository';
-import { Service } from '../decorators/service.decorator';
+import { Service, Transactional } from '@linhx/nest-repo';
 
 @Service()
 @Transactional()

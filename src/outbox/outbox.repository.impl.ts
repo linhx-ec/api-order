@@ -11,8 +11,7 @@ import {
   MongoTransaction,
   RepositoryImpl,
 } from '@linhx/nest-repo-mongodb';
-import { DB_PROVIDER } from '@linhx/nest-repo';
-import { TRANSACTION_STORE } from '../commons/transaction-store';
+import { DB_PROVIDER, TRANSACTION_STORE } from '@linhx/nest-repo';
 import { Message } from '@linhx/nest-kafka';
 
 @Injectable()
@@ -24,7 +23,7 @@ export class OutboxRepositoryImpl
     @Inject(DB_PROVIDER) private readonly db: DbMongo,
     @InjectModel(Outbox.name) private outboxModel: Model<OutboxDocument>,
   ) {
-    super(db, outboxModel, TRANSACTION_STORE);
+    super(db, outboxModel);
   }
   createWithTrxUuid(t: Message): Promise<Outbox> {
     const trxUuid = TRANSACTION_STORE.getTransactionUuid();
