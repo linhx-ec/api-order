@@ -11,8 +11,7 @@ import {
   MongoTransaction,
   RepositoryImpl,
 } from '@linhx/nest-repo-mongodb';
-import { DB_PROVIDER } from '@linhx/nest-repo';
-import { TRANSACTION_STORE } from '../commons/transaction-store';
+import { DB_PROVIDER, TRANSACTION_STORE } from '@linhx/nest-repo';
 
 @Injectable()
 export class OrderRepositoryImpl
@@ -23,7 +22,7 @@ export class OrderRepositoryImpl
     @Inject(DB_PROVIDER) private readonly db: DbMongo,
     @InjectModel(Order.name) private cardModel: Model<OrderDocument>,
   ) {
-    super(db, cardModel, TRANSACTION_STORE);
+    super(db, cardModel);
   }
   findByUserId(userId: string): Promise<Order> {
     return this.cardModel

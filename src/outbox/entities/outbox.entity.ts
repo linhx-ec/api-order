@@ -12,6 +12,9 @@ export class Outbox {
   @Prop({ type: Object })
   message: object;
 
+  @Prop({ type: Boolean, default: false })
+  deleted: boolean;
+
   get id() {
     return (this as any)._id.toString();
   }
