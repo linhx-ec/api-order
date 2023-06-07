@@ -36,7 +36,6 @@ export class OutboxServiceImpl implements OutBoxService<Outbox> {
   @OnEvent(TRANSACTIONAL_EVENT_COMMITTED)
   @Transactional({ new: true, noEmitCommittedEvent: true })
   async sendByTrxUuid(payload: CommitEvent) {
-    console.log('sendByTrxUuid', payload);
     const { trxUuid, committed } = payload;
     const hasOutbox = this.trxHasOutbox.has(trxUuid);
     this.trxHasOutbox.delete(trxUuid);
@@ -52,8 +51,6 @@ export class OutboxServiceImpl implements OutBoxService<Outbox> {
     await Promise.all(
       outboxes.map((outbox) => this.messageService.send(outbox)),
     );
-    await this.outboxRepo.deleteMany({
-      transactionUuid: trxUuid,
-    });
+    await this.outboxRepo.softDeleteByTrxUuid(trxUuid);
   }
 }

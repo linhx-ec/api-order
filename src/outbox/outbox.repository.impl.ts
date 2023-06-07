@@ -44,6 +44,21 @@ export class OutboxRepositoryImpl
       .session(TRANSACTION_STORE.getTransaction() as MongoTransaction)
       .exec();
   }
+  async softDeleteByTrxUuid(trxUuid: string): Promise<void> {
+    await this.outboxModel
+      .updateMany(
+        {
+          transactionUuid: trxUuid,
+        },
+        {
+          $set: {
+            deleted: true,
+          },
+        },
+      )
+      .session(TRANSACTION_STORE.getTransaction() as MongoTransaction)
+      .exec();
+  }
 }
 
 export const OutboxRepositoryProvider: ClassProvider = {
