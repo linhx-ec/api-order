@@ -34,4 +34,9 @@ export class CheckoutDto {
     description: 'Cart lines',
   })
   lines: CheckoutLineDto[];
+
+  @ApiProperty({
+    description: 'Payment method',
+  })
+  paymentMethod: any;
 }

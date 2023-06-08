@@ -15,4 +15,7 @@ export class OrderLine {
 
   @Prop()
   totalPrice: number;
+
+  @Prop()
+  currency: string;
 }

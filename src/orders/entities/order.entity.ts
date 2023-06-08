@@ -11,6 +11,9 @@ export class Order {
   totalPrice: number;
 
   @Prop()
+  currency: string;
+
+  @Prop()
   phone: string;
 
   @Prop()
@@ -29,6 +32,9 @@ export class Order {
 
   @Prop({ required: true })
   lines: OrderLine[];
+
+  @Prop({ required: true })
+  paymentMethod: string;
 
   get id() {
     return (this as any)._id.toString();
