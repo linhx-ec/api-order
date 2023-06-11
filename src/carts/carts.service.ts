@@ -69,14 +69,10 @@ export class CartsService {
     orderDto.email = dto.email;
     orderDto.phone = dto.phone;
     orderDto.shippingAddress = dto.shippingAddress;
-    orderDto.lines = dto.lines.map((checkoutLine) => {
-      const orderLineDto = new CreateOrderLineDto();
-      orderLineDto.productId = checkoutLine.productId;
-      orderLineDto.variantId = checkoutLine.variantId;
-      orderLineDto.quantity = checkoutLine.quantity;
-      orderLineDto.unitPrice = checkoutLine.unitPrice;
-      return orderLineDto;
-    });
+    orderDto.lines = dto.lines.map((checkoutLine) =>
+      CreateOrderLineDto.fromCheckoutLineDto(checkoutLine),
+    );
+    orderDto.paymentMethod = dto.paymentMethod;
 
     const order = await this.orderService.createOrder(orderDto);
 

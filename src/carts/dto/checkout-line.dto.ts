@@ -27,7 +27,14 @@ export class CheckoutLineDto {
   @IsNotEmpty()
   @ApiProperty({
     type: Number,
-    description: 'unitPrice',
+    description: 'Unit price',
   })
   unitPrice: number;
+
+  @IsNotEmpty()
+  @ApiProperty({
+    type: String,
+    description: 'Currency',
+  })
+  currency: string;
 }

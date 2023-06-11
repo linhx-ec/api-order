@@ -17,7 +17,12 @@ export class OrdersService {
     // TODO get all products
     // TODO check if products do exists
     // TODO check if the price was not changed
-    const order = this.orderRepo.create(dto.toEntity());
-    return order;
+    // TODO calculate the total price
+    const newOrder = dto.toEntity();
+    newOrder.totalPrice = newOrder.lines.reduce(
+      (total, line) => total + line.totalPrice,
+      0,
+    );
+    return await this.orderRepo.create(newOrder);
   }
 }

@@ -6,6 +6,7 @@ export class OrderLineDto {
   quantity: number;
   unitPrice: number;
   totalPrice: number;
+  currency: string;
 
   static fromEntity(line: OrderLine) {
     const dto = new OrderLineDto();
@@ -13,6 +14,7 @@ export class OrderLineDto {
     dto.variantId = line.variantId;
     dto.quantity = line.quantity;
     dto.unitPrice = line.unitPrice;
+    dto.currency = line.currency;
     dto.totalPrice = line.totalPrice;
     return dto;
   }

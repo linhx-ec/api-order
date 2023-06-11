@@ -33,6 +33,12 @@ export class CreateOrderDto {
   })
   lines: CreateOrderLineDto[];
 
+  @ApiProperty({
+    type: String,
+    description: 'Payment method',
+  })
+  paymentMethod: any;
+
   toEntity() {
     const entity = new Order();
     entity.userId = this.userId;
@@ -40,10 +46,7 @@ export class CreateOrderDto {
     entity.email = this.email;
     entity.shippingAddress = this.shippingAddress;
     entity.lines = this.lines.map((line) => line.toEntity());
-    entity.totalPrice = entity.lines.reduce(
-      (total, line) => total + line.totalPrice,
-      0,
-    );
+    entity.paymentMethod = this.paymentMethod;
     return entity;
   }
 }
