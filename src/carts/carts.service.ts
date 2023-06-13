@@ -11,6 +11,7 @@ import { CartLine } from './entities/cart-line.entity';
 import { TOPIC_ORDER_CREATED } from '../constants/messages';
 import { OUTBOX_PROVIDER, OutBoxService } from '../outbox/outbox.service';
 import { Service, Transactional } from '@linhx/nest-repo';
+import { order as ORDER_TYPES } from '@linhx-ec/shared-types';
 
 @Service()
 @Transactional()
@@ -99,7 +100,7 @@ export class CartsService {
 
     // save outbox
     await this.outboxService.save({
-      topic: TOPIC_ORDER_CREATED,
+      topic: ORDER_TYPES.eventsName.ORDER_CREATED,
       message: order,
     });
 

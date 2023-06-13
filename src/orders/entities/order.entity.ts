@@ -36,6 +36,12 @@ export class Order {
   @Prop({ required: true })
   paymentMethod: string;
 
+  @Prop({ required: true })
+  status: string; // TODO define enum
+
+  @Prop()
+  paymentId?: string;
+
   get id() {
     return (this as any)._id.toString();
   }
